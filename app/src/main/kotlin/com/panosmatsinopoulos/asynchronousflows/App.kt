@@ -3,6 +3,13 @@
  */
 package com.panosmatsinopoulos.asynchronousflows
 
+fun simple(): Sequence<Int> = sequence {
+    repeat(3) { it ->
+        Thread.sleep(1_000)
+        yield(it)
+    }
+}
+
 fun main() {
-    println("Hello World!")
+    simple().forEach { value -> println(value) }
 }
