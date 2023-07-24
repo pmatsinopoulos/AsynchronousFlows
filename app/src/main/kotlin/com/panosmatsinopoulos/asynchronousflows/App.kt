@@ -3,13 +3,18 @@
  */
 package com.panosmatsinopoulos.asynchronousflows
 
-fun simple(): Sequence<Int> = sequence {
-    repeat(3) { it ->
-        Thread.sleep(1_000)
-        yield(it)
-    }
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+
+suspend fun simple(): List<Int> {
+    delay(1_000L)
+    return listOf(1, 2, 3)
 }
 
 fun main() {
-    simple().forEach { value -> println(value) }
+    println("Main starting...")
+    runBlocking {
+        simple().forEach { value -> println(value) }
+    }
+    println("Main ending")
 }
