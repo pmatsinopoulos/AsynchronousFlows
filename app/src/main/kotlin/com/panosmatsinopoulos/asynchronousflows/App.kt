@@ -4,17 +4,31 @@
 package com.panosmatsinopoulos.asynchronousflows
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-suspend fun simple(): List<Int> {
-    delay(1_000L)
-    return listOf(1, 2, 3)
+fun simple(): Flow<Int> = flow { // flow builder
+    for (i in 1..3) {
+        delay(100) // pretend doing something long-running.
+        emit(i)
+    }
 }
 
 fun main() {
     println("Main starting...")
     runBlocking {
-        simple().forEach { value -> println(value) }
+        // start a new coroutine
+        launch {
+            // this runs in the background concurrently
+            for (i in 1..3) {
+                println("I'm not blocked $i")
+                delay(100)
+            }
+        }
+        // this runs concurrently to the coroutine launched above
+        simple().collect { value -> println(value) }
     }
     println("Main ending")
 }
