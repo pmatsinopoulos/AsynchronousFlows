@@ -3,18 +3,25 @@
  */
 package com.panosmatsinopoulos.asynchronousflows
 
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
+
+fun simple(): Flow<Int> = flow {
+    log("Started simple flow")
+    for (i in 1..3) {
+        emit(i)
+    }
+}
+
+fun log(msg: String) {
+    println("[${Thread.currentThread().name}] $msg")
+}
 
 fun main() {
     println("Main starting...")
     runBlocking {
-        (1..5).asFlow()
-            .filter { it % 2 == 0 }
-            .map { it.toString() }
-            .collect { value -> println(value) }
+        simple().collect { value -> log(value.toString()) }
     }
     println("Main ending")
 }
