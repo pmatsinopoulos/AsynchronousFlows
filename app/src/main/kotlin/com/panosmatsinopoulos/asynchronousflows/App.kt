@@ -7,11 +7,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 
 fun simple(): Flow<Int> = flow { // flow builder
-    println("Flow started")
     for (i in 1..3) {
         delay(100) // pretend doing something long-running.
+        println("Emitting $i")
         emit(i)
     }
 }
@@ -19,12 +20,9 @@ fun simple(): Flow<Int> = flow { // flow builder
 fun main() {
     println("Main starting...")
     runBlocking {
-        println("Calling simple function...")
-        val flow = simple()
-        println("Calling collect...")
-        flow.collect { value -> println(value) }
-        println("Calling collect again...")
-        flow.collect { value -> println(value) }
+        withTimeoutOrNull(250) {
+            simple().collect { value -> println(value) }
+        }
     }
     println("Main ending")
 }
