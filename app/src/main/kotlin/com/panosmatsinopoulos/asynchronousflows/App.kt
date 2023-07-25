@@ -3,16 +3,19 @@
  */
 package com.panosmatsinopoulos.asynchronousflows
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.runBlocking
 
 fun simple(): Flow<Int> = flow {
-    log("Started simple flow")
     for (i in 1..3) {
+        Thread.sleep(100)
+        log("emitting $i")
         emit(i)
     }
-}
+}.flowOn(Dispatchers.Default)
 
 fun log(msg: String) {
     println("[${Thread.currentThread().name}] $msg")
@@ -21,7 +24,7 @@ fun log(msg: String) {
 fun main() {
     println("Main starting...")
     runBlocking {
-        simple().collect { value -> log(value.toString()) }
+        simple().collect { value -> log("collecting: $value") }
     }
     println("Main ending")
 }
