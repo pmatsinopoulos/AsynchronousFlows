@@ -5,9 +5,9 @@ package com.panosmatsinopoulos.asynchronousflows
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeoutOrNull
 
 fun simple(): Flow<Int> = flow { // flow builder
     for (i in 1..3) {
@@ -20,9 +20,7 @@ fun simple(): Flow<Int> = flow { // flow builder
 fun main() {
     println("Main starting...")
     runBlocking {
-        withTimeoutOrNull(250) {
-            simple().collect { value -> println(value) }
-        }
+        (1..3).asFlow().collect { value -> println(value) }
     }
     println("Main ending")
 }
