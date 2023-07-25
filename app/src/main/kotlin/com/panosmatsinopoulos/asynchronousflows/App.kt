@@ -5,10 +5,7 @@ package com.panosmatsinopoulos.asynchronousflows
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 
 fun log(msg: String) {
@@ -26,7 +23,8 @@ fun main() {
     log("Main starting...")
     runBlocking {
         (1..3).asFlow()
-            .flatMapConcat { i -> requestFlow(i) }
+            .onEach { delay(300) }
+            .flatMapMerge { i -> requestFlow(i) }
             .collect { value ->
                 log("collecting $value")
             }
