@@ -5,7 +5,7 @@ package com.panosmatsinopoulos.asynchronousflows
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import kotlin.system.measureTimeMillis
@@ -26,10 +26,11 @@ fun main() {
     println("Main starting...")
     runBlocking {
         val time = measureTimeMillis {
-            simple().conflate()
-                .collect { value ->
-                    delay(300)
+            simple()
+                .collectLatest { value ->
                     log("collecting $value")
+                    delay(300)
+                    log("done collecting $value")
                 }
         }
         println("collected in $time ms")
