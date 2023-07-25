@@ -3,25 +3,18 @@
  */
 package com.panosmatsinopoulos.asynchronousflows
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.reduce
 import kotlinx.coroutines.runBlocking
-
-fun numbers(): Flow<Int> = flow {
-    try {
-        emit(1)
-        emit(2)
-        emit(3)
-    } finally {
-        println("finally in numbers")
-    }
-}
 
 fun main() {
     println("Main starting...")
     runBlocking {
-        numbers().take(2).collect { value -> println(value) }
+        val sumOfSquares = (1..5).asFlow()
+            .map { it * it }
+            .reduce { a, b -> a + b }
+        println("Sum of squares for 1..5 = $sumOfSquares")
     }
     println("Main ending")
 }
