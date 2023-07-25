@@ -5,7 +5,7 @@ package com.panosmatsinopoulos.asynchronousflows
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.runBlocking
 
 suspend fun performRequest(request: Int): String {
@@ -17,7 +17,10 @@ fun main() {
     println("Main starting...")
     runBlocking {
         (1..10).asFlow()
-            .map { request -> performRequest(request) }
+            .transform { request ->
+                emit("Making request $request")
+                emit(performRequest(request))
+            }
             .collect { response -> println(response) }
     }
     println("Main ending")
