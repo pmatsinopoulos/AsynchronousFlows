@@ -5,29 +5,26 @@ package com.panosmatsinopoulos.asynchronousflows
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 
 fun log(msg: String) {
     println("[${Thread.currentThread().name}] $msg")
 }
 
-fun requestFlow(i: Int): Flow<String> = flow {
-    emit("$i: First")
-    delay(500)
-    emit("$i: Second")
-}
+fun events(): Flow<Int> = (1..5).asFlow().onEach { delay(1_000) }
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun main() {
     log("Main starting...")
     runBlocking {
-        (1..3).asFlow()
-            .onEach { delay(300) }
-            .flatMapMerge { i -> requestFlow(i) }
-            .collect { value ->
-                log("collecting $value")
-            }
+        events()
+            .onEach { event -> log("Event: $event") }
+            .launchIn(this) // Launching the flow in separate coroutine
+        log("end collecting")
     }
     log("Main ending")
 }
