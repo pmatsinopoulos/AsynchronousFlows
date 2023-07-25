@@ -3,25 +3,25 @@
  */
 package com.panosmatsinopoulos.asynchronousflows
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
 
-suspend fun performRequest(request: Int): String {
-    delay(1_000)
-    return "Response for request $request"
+fun numbers(): Flow<Int> = flow {
+    try {
+        emit(1)
+        emit(2)
+        emit(3)
+    } finally {
+        println("finally in numbers")
+    }
 }
 
 fun main() {
     println("Main starting...")
     runBlocking {
-        (1..10).asFlow()
-            .transform { request ->
-                emit("Making request $request")
-                emit(performRequest(request))
-            }
-            .collect { response -> println(response) }
+        numbers().take(2).collect { value -> println(value) }
     }
     println("Main ending")
 }
