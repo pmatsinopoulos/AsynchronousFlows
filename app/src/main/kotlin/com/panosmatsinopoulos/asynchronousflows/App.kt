@@ -4,17 +4,17 @@
 package com.panosmatsinopoulos.asynchronousflows
 
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.reduce
 import kotlinx.coroutines.runBlocking
 
 fun main() {
     println("Main starting...")
     runBlocking {
-        val sumOfSquares = (1..5).asFlow()
-            .map { it * it }
-            .reduce { a, b -> a + b }
-        println("Sum of squares for 1..5 = $sumOfSquares")
+        (1..5).asFlow()
+            .filter { it % 2 == 0 }
+            .map { it.toString() }
+            .collect { value -> println(value) }
     }
     println("Main ending")
 }
