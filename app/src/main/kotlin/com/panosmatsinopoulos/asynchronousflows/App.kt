@@ -4,23 +4,21 @@
 package com.panosmatsinopoulos.asynchronousflows
 
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 
-fun simple(): Flow<Int> = flow { // flow builder
-    for (i in 1..3) {
-        delay(100) // pretend doing something long-running.
-        println("Emitting $i")
-        emit(i)
-    }
+suspend fun performRequest(request: Int): String {
+    delay(1_000)
+    return "Response for request $request"
 }
 
 fun main() {
     println("Main starting...")
     runBlocking {
-        (1..3).asFlow().collect { value -> println(value) }
+        (1..10).asFlow()
+            .map { request -> performRequest(request) }
+            .collect { response -> println(response) }
     }
     println("Main ending")
 }
