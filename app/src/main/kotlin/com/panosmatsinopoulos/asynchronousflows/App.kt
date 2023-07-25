@@ -3,19 +3,20 @@
  */
 package com.panosmatsinopoulos.asynchronousflows
 
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.runBlocking
+import kotlin.system.measureTimeMillis
 
 fun simple(): Flow<Int> = flow {
     for (i in 1..3) {
-        Thread.sleep(100)
+        delay(100)
         log("emitting $i")
         emit(i)
     }
-}.flowOn(Dispatchers.Default)
+}
 
 fun log(msg: String) {
     println("[${Thread.currentThread().name}] $msg")
@@ -24,7 +25,14 @@ fun log(msg: String) {
 fun main() {
     println("Main starting...")
     runBlocking {
-        simple().collect { value -> log("collecting: $value") }
+        val time = measureTimeMillis {
+            simple().buffer()
+                .collect { value ->
+                    delay(300)
+                    log("collecting $value")
+                }
+        }
+        println("collected in $time ms")
     }
     println("Main ending")
 }
